@@ -140,8 +140,8 @@ function buildCharts() {
         {
           label: "AI Integration Index",
           data: mockData.institutions.map((i) => i.usage),
-          borderColor: "#00c4d1",
-          backgroundColor: "rgba(0, 240, 255, 0.15)",
+          borderColor: "#2563eb",
+          backgroundColor: "rgba(37, 99, 235, 0.12)",
           tension: 0.38,
           fill: true,
           pointRadius: 4,
@@ -160,7 +160,7 @@ function buildCharts() {
   });
 
   fieldChart = new Chart(fieldCtx, {
-    type: "bar",
+    type: "pie",
     data: {
       labels: mockData.fields.map((f) => f.name),
       datasets: [
@@ -168,22 +168,25 @@ function buildCharts() {
           label: "AI Activity",
           data: mockData.fields.map((f) => f.usage),
           backgroundColor: [
-            "#00f0ff",
-            "#6f8bff",
-            "#a58cff",
-            "#6ed6ff",
-            "#2dc7ff",
+            "#2563eb",
+            "#0ea5e9",
+            "#06b6d4",
+            "#14b8a6",
+            "#8b5cf6",
           ],
-          borderRadius: 10,
+          borderColor: "#ffffff",
+          borderWidth: 2,
         },
       ],
     },
     options: {
       responsive: true,
       animation: { duration: 1200, easing: "easeOutExpo" },
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: "rgba(120,120,120,0.2)" } },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { usePointStyle: true, boxWidth: 10, color: "#374151" },
+        },
       },
     },
   });

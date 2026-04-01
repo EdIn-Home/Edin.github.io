@@ -1,12 +1,12 @@
 :root {
   --bg: #ffffff;
-  --text: #2c2c2c;
+  --text: #1f2937;
   --muted: #6b7280;
-  --accent: #00f0ff;
-  --accent-dark: #00c4d1;
-  --card: rgba(255, 255, 255, 0.78);
-  --border: rgba(0, 0, 0, 0.08);
-  --shadow: 0 14px 42px rgba(8, 25, 43, 0.11);
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --card: #ffffff;
+  --border: rgba(30, 41, 59, 0.1);
+  --shadow: 0 14px 30px rgba(37, 99, 235, 0.08);
   --radius: 18px;
 }
 
@@ -35,6 +35,7 @@ body {
 body {
   transition: background 0.35s ease, color 0.35s ease;
   overflow-x: hidden;
+  background: #ffffff;
 }
 
 .grain {
@@ -43,7 +44,7 @@ body {
   inset: 0;
   background-image: radial-gradient(rgba(0, 0, 0, 0.03) 0.5px, transparent 0.5px);
   background-size: 3px 3px;
-  opacity: 0.22;
+  opacity: 0.08;
 }
 
 .view {
@@ -92,15 +93,15 @@ body {
   width: 72px;
   height: 72px;
   border-radius: 20px;
-  background: linear-gradient(130deg, #00f0ff, #9d7dff);
-  box-shadow: 0 0 50px rgba(0, 240, 255, 0.5);
+  background: linear-gradient(130deg, #2563eb, #06b6d4);
+  box-shadow: 0 0 40px rgba(37, 99, 235, 0.35);
   margin-bottom: 1.2rem;
   animation: pulse 2.8s ease infinite;
 }
 
 .login-card,
 .panel {
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
   background: var(--card);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
@@ -127,7 +128,7 @@ body {
 .login-card input:focus,
 .search-wrap input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
   outline: none;
   transform: translateY(-1px);
 }
@@ -142,8 +143,8 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #00f0ff, #6f8bff);
-  color: #051014;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  color: #ffffff;
 }
 
 .btn:hover,
@@ -273,7 +274,7 @@ body {
 
 .entity-list li:hover {
   border-color: var(--accent);
-  background: rgba(0, 240, 255, 0.06);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .results-grid {
@@ -295,7 +296,7 @@ body {
 .result-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
-  background: rgba(0, 240, 255, 0.07);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .toast {
