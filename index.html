@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EdIn | AI Research Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+
+    <section id="loginView" class="view view-login active" aria-label="Login View">
+      <div class="login-shell">
+        <header class="login-branding">
+          <div class="logo-orb" aria-hidden="true"></div>
+          <h1>Ed<span>In</span></h1>
+          <p>Elite AI Research Intelligence Platform</p>
+        </header>
+
+        <form id="loginForm" class="login-card" autocomplete="off">
+          <h2>Secure Access</h2>
+          <p class="sub">Enter your credentials to continue.</p>
+
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="admin" required />
+
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="••••••••" required />
+
+          <button type="submit" class="btn btn-primary">Enter EdIn</button>
+          <p id="loginMessage" class="status" aria-live="polite"></p>
+          <small class="hint">Demo credentials: <b>admin</b> / <b>admin123</b></small>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboardView" class="view view-dashboard" aria-label="Dashboard View">
+      <header class="main-header">
+        <div class="brand-wrap">
+          <div class="logo-chip">E•D•i•n</div>
+          <div class="brand-text">
+            <h2>EdIn</h2>
+            <p>AI Research Command Center</p>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Main Navigation">
+          <button class="nav-btn active">Home</button>
+          <button class="nav-btn">Dashboard</button>
+          <button class="nav-btn">Search</button>
+          <button class="nav-btn">Analytics</button>
+          <button class="nav-btn">Profile</button>
+          <button id="logoutBtn" class="nav-btn danger">Logout</button>
+        </nav>
+
+        <button id="themeToggle" class="mode-toggle" type="button" aria-label="Toggle theme">
+          <span>Light</span>
+        </button>
+      </header>
+
+      <main class="grid">
+        <article class="panel panel-chart">
+          <div class="panel-head">
+            <h3>AI Usage Overview</h3>
+            <p>Institution & discipline-level AI activity</p>
+          </div>
+          <canvas id="institutionChart" aria-label="Institution usage chart"></canvas>
+        </article>
+
+        <article class="panel panel-chart">
+          <div class="panel-head">
+            <h3>Field Comparison</h3>
+            <p>Most AI-active research disciplines</p>
+          </div>
+          <canvas id="fieldChart" aria-label="Field usage chart"></canvas>
+        </article>
+
+        <article class="panel panel-list">
+          <div class="panel-head">
+            <h3>Institution Comparison</h3>
+            <p>Top institutions by AI integration index</p>
+          </div>
+          <ul id="institutionList" class="entity-list"></ul>
+        </article>
+
+        <article class="panel panel-search">
+          <div class="panel-head">
+            <h3>Search Intelligence</h3>
+            <p>Find institutions, authors, DOI or OSI identifiers</p>
+          </div>
+          <div class="search-wrap">
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Search institutions, authors, or identifiers"
+            />
+          </div>
+          <div id="searchResults" class="results-grid"></div>
+        </article>
+      </main>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
