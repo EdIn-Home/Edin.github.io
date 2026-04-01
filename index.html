@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EdIn — AI for Transparent Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,600&family=DM+Mono:wght@300;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a href="#page-home" class="skip-link">Skip to main content</a>
+
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="logo-wrap"><div class="logo-mark">Ed</div><div><h1>EdIn</h1><small>AI for Transparent Research</small></div></div>
+      <nav class="side-nav">
+        <button class="nav-item active" data-page="home">Home</button>
+        <button class="nav-item" data-page="search">Search</button>
+        <button class="nav-item" data-page="sources">Sources</button>
+        <button class="nav-item" data-page="authors">Authors</button>
+        <button class="nav-item" data-page="dashboard">Dashboard</button>
+        <button class="nav-item" data-page="about">About</button>
+      </nav>
+      <div class="side-bottom"><button class="nav-item">Settings</button><div class="user-row"><div class="avatar">G</div><div><b>Guest</b><small>Free Plan</small></div></div></div>
+    </aside>
+
+    <div class="main-wrap" id="main-wrap">
+      <header class="topbar">
+        <button id="sidebarToggle" class="icon-btn" aria-label="Toggle sidebar">☰</button>
+        <div class="top-search"><input id="topSearch" type="search" placeholder="Search papers, authors, journals…" aria-label="Global search" /><kbd>⌘K</kbd></div>
+        <div class="top-actions"><button class="btn ghost">API</button><button class="btn ghost">Institution</button><button class="btn primary">Sign In</button></div>
+      </header>
+
+      <main id="page-home" class="page active" aria-label="Home page">
+        <section class="hero card">
+          <div id="liveTicker" class="eyebrow">● Live Index — 4.28M Papers Indexed</div>
+          <h2>AI for <br /><span>Transparent Research</span></h2>
+          <p>Dark, modern intelligence surface for papers, journals, institutions, and authors with AI transparency analytics.</p>
+          <div class="hero-search"><input id="heroSearch" type="search" placeholder="Search papers, authors, or journals…" /><button id="heroSearchBtn" class="btn primary">Search</button></div>
+          <div class="tags"><span>Trending:</span><button class="tag" data-term="Large Language Models">Large Language Models</button><button class="tag" data-term="Reproducibility">Reproducibility</button><button class="tag" data-term="Biology">Biology</button><button class="tag" data-term="Climate Change">Climate Change</button></div>
+        </section>
+
+        <section class="kpi-grid" id="kpiGrid"></section>
+
+        <section class="two-col">
+          <article class="card"><div class="section-title">AI Usage by Discipline</div><div id="disciplineBars" class="bar-chart" role="img" aria-label="AI usage by discipline"></div></article>
+          <article class="card"><div class="section-title">Field Explorer</div><div id="fieldExplorer" class="field-grid"></div></article>
+        </section>
+
+        <section class="card">
+          <div class="section-title">Recently Indexed Papers</div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th scope="col">Title</th><th scope="col">Authors</th><th scope="col">Journal</th><th scope="col">AI</th><th scope="col">Repro.</th><th scope="col">Integrity</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+        </section>
+      </main>
+
+      <main id="page-search" class="page" aria-label="Search page">
+        <section class="search-grid">
+          <aside class="card filter-panel">
+            <div class="section-title">Filters</div>
+            <label>Discipline</label><select id="filterDiscipline"></select>
+            <label>Year</label><select id="filterYear"></select>
+            <label>Min Repro: <span id="reproOut">0</span></label><input id="reproRange" type="range" min="0" max="100" value="0" />
+          </aside>
+          <section class="card">
+            <div class="section-title">Search Results <span id="searchCount" aria-live="polite"></span></div>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th scope="col">Title</th><th scope="col">Authors</th><th scope="col">Field</th><th scope="col">Year</th><th scope="col">AI</th><th scope="col">Repro.</th><th scope="col">Integrity</th></tr></thead><tbody id="searchBody"></tbody></table></div>
+          </section>
+          <aside class="card"><div class="section-title">Quick Stats</div><p id="quickStats"></p></aside>
+        </section>
+      </main>
+
+      <main id="page-sources" class="page"><section class="card"><div class="section-title">Sources & Journals</div><div class="table-wrap"><table class="data-table"><thead><tr><th>Journal</th><th>Publisher</th><th>Field</th><th>Impact</th><th>Avg AI</th></tr></thead><tbody id="journalBody"></tbody></table></div></section></main>
+      <main id="page-authors" class="page"><section class="card"><div class="section-title">Authors</div><div id="authorsGrid" class="authors-grid"></div></section></main>
+      <main id="page-dashboard" class="page"><section class="kpi-grid" id="dashGrid"></section></main>
+      <main id="page-about" class="page"><section class="card"><div class="section-title">About EdIn</div><p>EdIn scores transparency in modern research and provides investor-grade analytics for research ecosystems.</p></section></main>
+    </div>
+
+    <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+    <script src="js/app.js"></script>
+  </body>
+</html>
