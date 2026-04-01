@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="EdIn — AI for Transparent Research. Advanced indexing, verification, and integrity analytics."
+    />
+    <title>EdIn — AI for Transparent Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app" class="app locked">
+      <section id="loginView" class="login-view active">
+        <div class="login-card">
+          <h1>Ed<span>In</span></h1>
+          <p>AI for Transparent Research</p>
+          <form id="loginForm">
+            <label for="username">Username</label>
+            <input id="username" type="text" required placeholder="admin" />
+            <label for="password">Password</label>
+            <input id="password" type="password" required placeholder="admin123" />
+            <button type="submit" class="btn primary">Enter Platform</button>
+            <small class="hint">Demo: admin / admin123</small>
+            <p id="loginMessage" class="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="platformView" class="platform-view">
+        <aside class="sidebar" aria-label="Main navigation">
+          <a href="#" class="logo" data-page="home">
+            <div class="logo-mark">Ed</div>
+            <div>
+              <h2>EdIn</h2>
+              <small>Transparent Research AI</small>
+            </div>
+          </a>
+          <nav id="navItems" class="nav-items">
+            <button class="nav-item active" data-page="home">Home</button>
+            <button class="nav-item" data-page="search">Search</button>
+            <button class="nav-item" data-page="sources">Sources</button>
+            <button class="nav-item" data-page="authors">Authors</button>
+            <button class="nav-item" data-page="dashboard">Dashboard</button>
+            <button class="nav-item" data-page="about">About</button>
+          </nav>
+          <div class="sidebar-foot">
+            <button id="logoutBtn" class="btn ghost">Logout</button>
+          </div>
+        </aside>
+
+        <main class="main-wrap">
+          <header class="topbar">
+            <input id="globalSearch" type="search" placeholder="Search papers, authors, journals, DOI, ORCID..." />
+            <div class="top-actions">
+              <button class="btn ghost" id="themeToggle">Light</button>
+              <button class="btn primary" id="quickReport">Generate Report</button>
+            </div>
+          </header>
+
+          <section id="page-home" class="page active">
+            <div class="hero">
+              <span class="live">● Live Index — 4.28M papers</span>
+              <h1>AI for <span>Transparent</span> Research</h1>
+              <p>
+                EdIn indexes global academic output with reproducibility and integrity scoring to help
+                universities, publishers, and funders make data-driven decisions.
+              </p>
+              <div class="tags">
+                <button class="tag">LLMs</button><button class="tag">Reproducibility</button
+                ><button class="tag">AI Attribution</button><button class="tag">Climate AI</button>
+              </div>
+            </div>
+
+            <div class="kpi-grid" id="kpiGrid"></div>
+
+            <div class="two-col">
+              <article class="card">
+                <h3>AI Usage by Discipline</h3>
+                <canvas id="disciplineChart"></canvas>
+              </article>
+              <article class="card">
+                <h3>Contribution Distribution</h3>
+                <canvas id="contribPieChart"></canvas>
+              </article>
+            </div>
+
+            <article class="card">
+              <div class="section-row">
+                <h3>Recently Indexed Papers</h3>
+                <button class="btn ghost" data-page="search">View all</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Authors</th>
+                      <th>Field</th>
+                      <th>AI</th>
+                      <th>Repro.</th>
+                      <th>Integrity</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentPapers"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section id="page-search" class="page">
+            <div class="section-row">
+              <h2>Search Intelligence</h2>
+              <small id="searchMeta"></small>
+            </div>
+            <div class="search-layout">
+              <aside class="card filters">
+                <h4>Filters</h4>
+                <label>Discipline</label>
+                <select id="filterDiscipline">
+                  <option value="">All</option>
+                </select>
+                <label>Year</label>
+                <select id="filterYear">
+                  <option value="">Any</option>
+                </select>
+                <label>Min Reproducibility: <span id="reproVal">0</span></label>
+                <input id="reproSlider" type="range" min="0" max="100" value="0" />
+              </aside>
+              <article class="card">
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Journal</th>
+                        <th>Year</th>
+                        <th>AI</th>
+                        <th>Repro.</th>
+                        <th>Integrity</th>
+                      </tr>
+                    </thead>
+                    <tbody id="searchBody"></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="page-sources" class="page">
+            <h2>Sources & Journals</h2>
+            <article class="card">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Journal</th><th>Publisher</th><th>Field</th><th>Impact</th><th>Avg AI</th><th>Avg Repro.</th></tr>
+                  </thead>
+                  <tbody id="sourcesBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section id="page-authors" class="page">
+            <h2>Author Profiles</h2>
+            <div id="authorsGrid" class="authors-grid"></div>
+          </section>
+
+          <section id="page-dashboard" class="page">
+            <div class="section-row">
+              <h2>Institution Dashboard</h2>
+              <button class="btn ghost">2026</button>
+            </div>
+            <div class="kpi-grid" id="dashKpis"></div>
+            <div class="two-col">
+              <article class="card"><h3>Institution AI Usage</h3><canvas id="instChart"></canvas></article>
+              <article class="card"><h3>Department AI Mix (Pie)</h3><canvas id="deptPie"></canvas></article>
+            </div>
+          </section>
+
+          <section id="page-about" class="page">
+            <article class="card prose">
+              <h2>About EdIn</h2>
+              <p>
+                EdIn is a transparent research intelligence platform built for AI-era scholarly publishing,
+                institutional benchmarking, and compliance-grade reporting.
+              </p>
+              <ul>
+                <li>4.28M indexed papers</li>
+                <li>18,420 journals</li>
+                <li>2.9M indexed authors</li>
+                <li>190+ countries</li>
+              </ul>
+            </article>
+          </section>
+        </main>
+      </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="script.js"></script>
+  </body>
+</html>
