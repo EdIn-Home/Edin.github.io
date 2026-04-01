@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template_string, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 
 app = Flask(__name__, static_folder='.')
 

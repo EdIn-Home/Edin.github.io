@@ -1,262 +1,218 @@
-const demoUser = {
-  username: "admin",
-  password: "admin123",
-};
+const demoUser = { username: "admin", password: "admin123" };
+const state = { charts: {}, query: "", discipline: "", year: "", minRepro: 0 };
 
-const mockData = {
-  institutions: [
-    { name: "MIT Media Lab", usage: 97, country: "USA" },
-    { name: "Stanford AI Hub", usage: 92, country: "USA" },
-    { name: "ETH Zurich", usage: 89, country: "Switzerland" },
-    { name: "Oxford Future Lab", usage: 84, country: "UK" },
-    { name: "NUS Quantum Compute", usage: 79, country: "Singapore" },
-  ],
-  fields: [
-    { name: "Bioinformatics", usage: 95 },
-    { name: "Climate Modeling", usage: 88 },
-    { name: "Computational Neuroscience", usage: 83 },
-    { name: "Material Discovery", usage: 81 },
-    { name: "Quantum Simulation", usage: 76 },
-  ],
-  entities: [
-    {
-      type: "institution",
-      name: "MIT Media Lab",
-      identifier: "OSI-MIT-4021",
-      focus: "Human-AI Systems",
-    },
-    {
-      type: "author",
-      name: "Dr. Leila Kerr",
-      identifier: "DOI:10.8921/edin.2026.19",
-      focus: "AI in Climate Systems",
-    },
-    {
-      type: "institution",
-      name: "Oxford Future Lab",
-      identifier: "OSI-OXF-2304",
-      focus: "Medical Foundation Models",
-    },
-    {
-      type: "author",
-      name: "Prof. Elias Khan",
-      identifier: "DOI:10.7404/edin.2026.44",
-      focus: "AI Governance",
-    },
-    {
-      type: "institution",
-      name: "ETH Zurich",
-      identifier: "OSI-ETH-7811",
-      focus: "Robotics + AI",
-    },
-  ],
-};
+const papers = [
+  { title: "AI Attribution in Clinical NLP", author: "L. Kerr", journal: "Nature MI", field: "Health", year: 2026, ai: 42, repro: 84, integrity: 89 },
+  { title: "Transparent Agent Pipelines", author: "E. Khan", journal: "JMLR", field: "Computer", year: 2025, ai: 63, repro: 78, integrity: 85 },
+  { title: "Reproducible Climate ML Models", author: "T. Ade", journal: "Climate Data", field: "Climate", year: 2026, ai: 37, repro: 91, integrity: 92 },
+  { title: "Bias Audits in LLM Evaluation", author: "S. Li", journal: "AI Ethics", field: "Ethics", year: 2024, ai: 55, repro: 76, integrity: 80 },
+  { title: "Scalable Neuro-Symbolic Workflows", author: "M. Noor", journal: "Neuro Comp", field: "Computer", year: 2026, ai: 48, repro: 82, integrity: 84 },
+];
 
-const loginView = document.getElementById("loginView");
-const dashboardView = document.getElementById("dashboardView");
-const loginForm = document.getElementById("loginForm");
-const loginMessage = document.getElementById("loginMessage");
-const logoutBtn = document.getElementById("logoutBtn");
-const institutionList = document.getElementById("institutionList");
-const searchInput = document.getElementById("searchInput");
-const searchResults = document.getElementById("searchResults");
-const toast = document.getElementById("toast");
-const themeToggle = document.getElementById("themeToggle");
+const sources = [
+  ["Nature MI", "Springer", "Health", "24.5", "38%", "82"],
+  ["PLOS CB", "PLOS", "Biology", "3.8", "42%", "89"],
+  ["NeuroImage", "Elsevier", "Neuroscience", "5.7", "46%", "80"],
+  ["AI & Society", "Springer", "Ethics", "4.3", "34%", "86"],
+];
 
-let institutionChart;
-let fieldChart;
+const authors = [
+  { name: "Dr. Kwame Okonkwo", inst: "University of Lagos", orcid: "0000-0002-1002-2234", ai: "42%", h: 28 },
+  { name: "Dr. Bayo Adeyemi", inst: "OAU", orcid: "0000-0003-4442-9111", ai: "29%", h: 22 },
+  { name: "Dr. Leila Kerr", inst: "MIT", orcid: "0000-0001-5555-3322", ai: "37%", h: 33 },
+  { name: "Prof. Elias Khan", inst: "Oxford", orcid: "0000-0002-8888-1022", ai: "51%", h: 39 },
+];
 
-function setView(isLoggedIn) {
-  loginView.classList.toggle("active", !isLoggedIn);
-  dashboardView.classList.toggle("active", isLoggedIn);
+const byId = (id) => document.getElementById(id);
+
+function toast(msg) {
+  const t = byId("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
 }
 
-function showToast(message) {
-  toast.textContent = message;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2000);
+function setLoggedIn(logged) {
+  byId("loginView").classList.toggle("active", !logged);
+  byId("platformView").style.display = logged ? "grid" : "none";
+  byId("app").classList.toggle("locked", !logged);
 }
 
-function validateLogin(username, password) {
-  return username === demoUser.username && password === demoUser.password;
+function navigate(page) {
+  document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+  byId(`page-${page}`).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.page === page));
 }
 
-function renderInstitutionList() {
-  institutionList.innerHTML = "";
-
-  mockData.institutions.forEach((institution) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span>${institution.name}</span><strong>${institution.usage}%</strong>`;
-    li.addEventListener("click", () => {
-      showToast(`${institution.name} • ${institution.country} • Usage ${institution.usage}%`);
-    });
-    institutionList.appendChild(li);
-  });
+function kpiCard(label, value, delta) {
+  return `<div class="kpi"><div class="label">${label}</div><div class="value">${value}</div><div class="delta">${delta}</div></div>`;
 }
 
-function renderSearchResults(query = "") {
-  const lower = query.trim().toLowerCase();
-  const filtered = mockData.entities.filter((item) => {
-    return (
-      item.name.toLowerCase().includes(lower) ||
-      item.identifier.toLowerCase().includes(lower) ||
-      item.focus.toLowerCase().includes(lower)
-    );
+function renderHome() {
+  byId("kpiGrid").innerHTML = [
+    kpiCard("Papers Indexed", "4.28M", "+12% this month"),
+    kpiCard("Journals Covered", "18,420", "+340 new"),
+    kpiCard("AI Verified", "2.31M", "+28% YoY"),
+    kpiCard("Indexed Authors", "2.9M", "+180k new"),
+  ].join("");
+
+  byId("recentPapers").innerHTML = papers
+    .map((p) => `<tr><td>${p.title}</td><td>${p.author}</td><td>${p.field}</td><td>${p.ai}%</td><td>${p.repro}</td><td>${p.integrity}</td></tr>`)
+    .join("");
+}
+
+function renderSearch() {
+  const fields = [...new Set(papers.map((p) => p.field))];
+  const years = [...new Set(papers.map((p) => p.year))].sort((a, b) => b - a);
+  byId("filterDiscipline").innerHTML = `<option value="">All</option>` + fields.map((f) => `<option>${f}</option>`).join("");
+  byId("filterYear").innerHTML = `<option value="">Any</option>` + years.map((y) => `<option>${y}</option>`).join("");
+  applySearchFilters();
+}
+
+function applySearchFilters() {
+  const q = state.query.toLowerCase();
+  const list = papers.filter((p) => {
+    const hit = `${p.title} ${p.author} ${p.journal} ${p.field}`.toLowerCase().includes(q);
+    const d = !state.discipline || p.field === state.discipline;
+    const y = !state.year || String(p.year) === state.year;
+    const r = p.repro >= state.minRepro;
+    return hit && d && y && r;
   });
 
-  searchResults.innerHTML = "";
+  byId("searchBody").innerHTML = list
+    .map((p) => `<tr><td>${p.title}</td><td>${p.author}</td><td>${p.journal}</td><td>${p.year}</td><td>${p.ai}%</td><td>${p.repro}</td><td>${p.integrity}</td></tr>`)
+    .join("");
 
-  if (!filtered.length) {
-    searchResults.innerHTML = '<p class="sub">No matching records found.</p>';
-    return;
-  }
-
-  filtered.forEach((item) => {
-    const card = document.createElement("article");
-    card.className = "result-card";
-    card.innerHTML = `
-      <small>${item.type.toUpperCase()}</small>
-      <h4>${item.name}</h4>
-      <p>${item.focus}</p>
-      <code>${item.identifier}</code>
-    `;
-    card.addEventListener("click", () => showToast(`Opened ${item.name}`));
-    searchResults.appendChild(card);
-  });
+  byId("searchMeta").textContent = `${list.length} result(s)`;
 }
 
-function buildCharts() {
-  const institutionCtx = document.getElementById("institutionChart");
-  const fieldCtx = document.getElementById("fieldChart");
+function renderSources() {
+  byId("sourcesBody").innerHTML = sources
+    .map((s) => `<tr>${s.map((v) => `<td>${v}</td>`).join("")}</tr>`)
+    .join("");
+}
 
-  if (institutionChart) institutionChart.destroy();
-  if (fieldChart) fieldChart.destroy();
+function renderAuthors() {
+  byId("authorsGrid").innerHTML = authors
+    .map(
+      (a) => `<article class="author-card"><h4>${a.name}</h4><p>${a.inst}</p><p>ORCID: ${a.orcid}</p><p>Avg AI: <b>${a.ai}</b> • h-index: <b>${a.h}</b></p></article>`
+    )
+    .join("");
+}
 
-  institutionChart = new Chart(institutionCtx, {
-    type: "line",
+function drawCharts() {
+  Object.values(state.charts).forEach((c) => c?.destroy?.());
+
+  state.charts.discipline = new Chart(byId("disciplineChart"), {
+    type: "bar",
     data: {
-      labels: mockData.institutions.map((i) => i.name),
-      datasets: [
-        {
-          label: "AI Integration Index",
-          data: mockData.institutions.map((i) => i.usage),
-          borderColor: "#2563eb",
-          backgroundColor: "rgba(37, 99, 235, 0.12)",
-          tension: 0.38,
-          fill: true,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-        },
-      ],
+      labels: ["Health", "Computer", "Biology", "Climate", "Ethics"],
+      datasets: [{ data: [44, 59, 36, 41, 33], backgroundColor: ["#2563eb", "#06b6d4", "#14b8a6", "#8b5cf6", "#22c55e"] }],
     },
-    options: {
-      responsive: true,
-      animation: { duration: 1100, easing: "easeOutQuart" },
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, grid: { color: "rgba(120,120,120,0.2)" } },
-      },
-    },
+    options: { plugins: { legend: { display: false } } },
   });
 
-  fieldChart = new Chart(fieldCtx, {
+  state.charts.contrib = new Chart(byId("contribPieChart"), {
     type: "pie",
     data: {
-      labels: mockData.fields.map((f) => f.name),
-      datasets: [
-        {
-          label: "AI Activity",
-          data: mockData.fields.map((f) => f.usage),
-          backgroundColor: [
-            "#2563eb",
-            "#0ea5e9",
-            "#06b6d4",
-            "#14b8a6",
-            "#8b5cf6",
-          ],
-          borderColor: "#ffffff",
-          borderWidth: 2,
-        },
-      ],
+      labels: ["Human-written", "AI-assisted", "AI-generated"],
+      datasets: [{ data: [52, 31, 17], backgroundColor: ["#22c55e", "#f59e0b", "#ef4444"], borderColor: "#fff", borderWidth: 2 }],
     },
-    options: {
-      responsive: true,
-      animation: { duration: 1200, easing: "easeOutExpo" },
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: { usePointStyle: true, boxWidth: 10, color: "#374151" },
-        },
-      },
+  });
+
+  state.charts.inst = new Chart(byId("instChart"), {
+    type: "line",
+    data: {
+      labels: ["MIT", "Stanford", "ETH", "Oxford", "NUS"],
+      datasets: [{ data: [97, 92, 89, 84, 79], borderColor: "#2563eb", fill: true, backgroundColor: "rgba(37,99,235,0.1)", tension: 0.35 }],
+    },
+    options: { plugins: { legend: { display: false } } },
+  });
+
+  state.charts.dept = new Chart(byId("deptPie"), {
+    type: "pie",
+    data: {
+      labels: ["Computer", "Health", "Engineering", "Social", "Humanities"],
+      datasets: [{ data: [33, 24, 21, 14, 8], backgroundColor: ["#2563eb", "#06b6d4", "#8b5cf6", "#f59e0b", "#22c55e"], borderColor: "#fff", borderWidth: 2 }],
     },
   });
 }
 
-function loadDashboard() {
-  renderInstitutionList();
-  renderSearchResults();
-  buildCharts();
+function renderDashKpis() {
+  byId("dashKpis").innerHTML = [
+    kpiCard("Total Publications", "1,284", "+14% YoY"),
+    kpiCard("AI Verified", "847", "+42% YoY"),
+    kpiCard("Avg Integrity", "82.4", "+3.1 pts"),
+    kpiCard("Active Researchers", "318", "+28 new"),
+  ].join("");
 }
 
-loginForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!validateLogin(username, password)) {
-    loginMessage.textContent = "Invalid credentials. Try admin / admin123.";
-    loginMessage.className = "status error";
-    return;
-  }
-
-  localStorage.setItem("edin_session", "active");
-  loginMessage.textContent = "Login successful. Redirecting to dashboard...";
-  loginMessage.className = "status success";
-
-  setTimeout(() => {
-    setView(true);
-    loadDashboard();
-    showToast("Welcome to EdIn");
-  }, 450);
-});
-
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("edin_session");
-  setView(false);
-  loginForm.reset();
-  loginMessage.textContent = "";
-  showToast("Logged out");
-});
-
-searchInput.addEventListener("input", (event) => {
-  renderSearchResults(event.target.value);
-});
-
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  const dark = document.body.classList.contains("dark");
-  localStorage.setItem("edin_theme", dark ? "dark" : "light");
-  themeToggle.innerHTML = `<span>${dark ? "Dark" : "Light"}</span>`;
-  buildCharts();
-});
-
-document.querySelectorAll(".nav-btn:not(.danger)").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    showToast(`${btn.textContent.trim()} section loaded`);
+function initEvents() {
+  byId("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const u = byId("username").value.trim();
+    const p = byId("password").value.trim();
+    if (u === demoUser.username && p === demoUser.password) {
+      localStorage.setItem("edin_session", "active");
+      setLoggedIn(true);
+      toast("Welcome to EdIn");
+    } else {
+      byId("loginMessage").textContent = "Invalid credentials. Use admin / admin123.";
+    }
   });
-});
+
+  byId("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("edin_session");
+    setLoggedIn(false);
+  });
+
+  document.querySelectorAll("[data-page]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      navigate(el.dataset.page);
+    });
+  });
+
+  byId("globalSearch").addEventListener("input", (e) => {
+    state.query = e.target.value;
+    applySearchFilters();
+  });
+
+  byId("filterDiscipline").addEventListener("change", (e) => {
+    state.discipline = e.target.value;
+    applySearchFilters();
+  });
+
+  byId("filterYear").addEventListener("change", (e) => {
+    state.year = e.target.value;
+    applySearchFilters();
+  });
+
+  byId("reproSlider").addEventListener("input", (e) => {
+    state.minRepro = Number(e.target.value);
+    byId("reproVal").textContent = state.minRepro;
+    applySearchFilters();
+  });
+
+  byId("themeToggle").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const dark = document.body.classList.contains("dark");
+    byId("themeToggle").textContent = dark ? "Dark" : "Light";
+    drawCharts();
+  });
+
+  byId("quickReport").addEventListener("click", () => toast("AI transparency report generated."));
+}
 
 (function init() {
-  const savedTheme = localStorage.getItem("edin_theme");
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark");
-    themeToggle.innerHTML = "<span>Dark</span>";
-  }
+  renderHome();
+  renderSearch();
+  renderSources();
+  renderAuthors();
+  renderDashKpis();
+  drawCharts();
+  initEvents();
 
   const hasSession = localStorage.getItem("edin_session") === "active";
-  setView(hasSession);
-  if (hasSession) loadDashboard();
+  setLoggedIn(hasSession);
 })();
